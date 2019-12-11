@@ -16,43 +16,40 @@
     var zombie_map;
     var old_position;
     var tolerance = 10;
-    // Add proper lat/lng here instead of zeroes
+    // On initialise les marqueurs du jeu
     var data = `45.834294061152605 1.4919649265243606 zombie.png
     45.83402121696192 1.4922492406799392 hospital.png`;
-    // Split the data into an array of lines of data
+    // On traite les marqueurs dans un csv
     var markers = data.split("\n");
-    // Save the locations of all markers
+    // on sauve les marqueurs dans un dictionnaire
     var all_markers = [];
     function initMap() {
-        // SET YOUR OWN CENTER OF THE MAP
+        // Centrez la carte
         zombie_map = new google.maps.Map(document.getElementById('zombie_map'), {
             zoom: 10,
             center: {lat: 45.83404364256228 , lng: 1.49198101977845}
         });
-        // Get geolocation
+        // on recupère la position du joueur et de son terminal
         if( navigator.geolocation) {
             navigator.geolocation.watchPosition(set_my_position);
         }
         else {
             alert("Geolocation doesn't work in your browser");
         }
-        // Add markers
+        // boucle for pour placer les marqueurs
         for(var i=0; i < markers.length; i++){
-            // Split this marker's info into an array
             var marker_data = markers[i].trim().split(" ");
-            // Create the LatLng of the marker
             var marker_position = new google.maps.LatLng(marker_data[0], marker_data[1]);
-            // Create a marker at this point
             var marker = new google.maps.Marker({
               position: marker_position,
               icon: marker_data[2],
               map: zombie_map
             });
-            // Add this marker to the list
+           
             all_markers.push(marker);
         }
         console.log(all_markers);
-        // SET YOUR OWN OLD POSITION (same as map center)
+        // Il faut rafraichir la position du joueur sinon les marqueurs vont rester
         old_position = new google.maps.Marker({
             position: {lat: 45.83404364256228, lng: 1.49198101977845},
             map: zombie_map
@@ -66,11 +63,12 @@
           icon: "player.png",
           map: zombie_map
         });
+      // Boucle for qui teste la distance du joueur aux marqueurs
         old_position = marker;
         for(var i=0; i < all_markers.length; i++){
             var distance = google.maps.geometry.spherical.computeDistanceBetween(pos, all_markers[i].getPosition());
             if( distance < tolerance ){
-                console.log("Found it!")
+                console.log("Trouvé !")
             }
         }
     }
